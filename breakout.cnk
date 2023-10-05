@@ -34,6 +34,7 @@ func main()
       add blocks, col
     end
   end
+  loadsound 0, currdir() + '/kicksp2.wav'
   console false
 end
 
@@ -75,13 +76,17 @@ func ballMove()
     lostBall()
   else if ballx + halfBall >= batx2 - halfThick and onBatY 
     vx = -vx
+    playsound 0
   else if ballx - halfBall <= batx1 + halfThick and onBatY
     vx = -vx
+    playsound 0
   end
   if bally + halfBall >= baty2 - halfThick and onBatX
     vy = -vy
+    playsound 0
   else if bally - halfBall <= baty1 + halfThick and onBatX
     vy = -vy
+    playsound 0
   end
 end
 
