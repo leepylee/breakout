@@ -1,3 +1,10 @@
+struct Rect
+  num left
+  num top
+  num right
+  num bottom
+end
+
 func main()
   num x = MIDX
   num y = MIDY
@@ -10,7 +17,7 @@ func main()
   num batThick = 10 
   num ballThick = 15
   num wallThick = SCREENH * 0.2
-
+ 
   num ballx = MIDX * 0.6
   num bally = MIDY
   num vx = -5
@@ -70,12 +77,6 @@ func batMove()
   end
 end
 
-struct Rect
-  num left
-  num top
-  num right
-  num bottom
-end
 
 func bool overlap(Rect a, Rect b)
   if a.top > b.bottom
@@ -104,7 +105,7 @@ end
 func ballMove()
   ballx += vx
   bally += vy
-  Rect ball = { left = ballx - halfBall, top = bally - halfBall, right = ballx + halfBall, bottom = ball + halfBall}
+  Rect ball = { left = ballx - halfBall, top = bally - halfBall, right = ballx + halfBall, bottom = bally + halfBall}
   Rect leftBat = { left = batx1 + halfThick, top = y - halfBat, right = batx1 + halfThick, bottom = y + halfBat}
   Rect rightBat = { left = batx2 - halfThick, top = y - halfBat, right = batx2 - halfThick, bottom = y + halfBat}
   Rect topBat = { left = x - halfBat, top = baty1 + halfThick, right = x + halfBat , bottom = baty1 + halfThick}
@@ -136,12 +137,12 @@ func ballMove()
   num ballCellx = int((ballx - blockLeft) / blockSpacing)
   num ballCelly = int((bally - blockTop) / blockSpacing)
   if ballCellx >= -1 and ballCellx <= blockWidth and ballCelly >= -1 and ballCelly <= blockWidth // only interested if close to blocks
-    for bcx from -1 to 1               // look at the 3 x 3 cells around ball
+    for bcx from -1 to 1               // look at the 3 x 3 cells around ball cell
        num xp = ballCellx + bcx
-       if yp >= 0 and yp < blockWidth  
+       if xp >= 0 and xp < blockWidth  
        for bcy from -1 to 1
          num yp = ballCelly + bcy
-         if xp >= 0 and xp < blockWidth
+         if yp >= 0 and yp < blockWidth
             num bi = yp * blockWidth + xp // pointer to the current cell
             num col = blocks[bi]
             if col != 0
@@ -156,7 +157,7 @@ func ballMove()
                   vy = -vy
                   bally += vy
                 end
-                if dir = "x" or dir == "xy"
+                if dir == "x" or dir == "xy"
                   vx = -vx
                   ballx += vx
                 end
