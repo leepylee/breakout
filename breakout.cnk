@@ -32,8 +32,8 @@ func main()
   num blockInner = 4
   num blockSpacing = MIDX / 20
   num blockSize = MIDX / 25
-  num blockTop = MIDY * 0.6
-  num blockLeft = MIDX * 0.6
+  num blockTop = (SCREENH - blockSpacing * blockWidth) / 2
+  num blockLeft = (SCREENW - blockSpacing * blockWidth) / 2
   for by to blockWidth
     for bx to blockWidth
       num col = 0
@@ -91,18 +91,21 @@ func bool overlap(Rect a, Rect b)
   return true
 end
 
-func str overlapDirection(Rect a, Rect b)
+func str bounceDirectionx(Rect block, num x, num y, num vx, num vy)
   str dir = ""
-  if a.left <= b.right or a.right >= b.left
+  if (vx > 0 and x < block.left) or (vx < 0 and x > block.right)
     dir = "x"
   end
-  if a.top <= b.bottom or a.bottom >= b.top
+  if (vy > 0 and y < block.top) or (vy < 0 and y > block.bottom)
     dir = dir + "y"
-  end if
+  end
   return dir
 end
 
 func ballMove()
+  num prevx = ballx
+  num prevy = bally
+
   ballx += vx
   bally += vy
   Rect ball = { left = ballx - halfBall, top = bally - halfBall, right = ballx + halfBall, bottom = bally + halfBall}
@@ -152,7 +155,7 @@ func ballMove()
               if overlap(ball, block)
                 blocks[bi] = 0
                 playsound 1
-                str dir = overlapDirection(ball, block)
+                str dir = bounceDirection(block, prevx, prevy, vx, vy)
                 if dir == "y" or dir == "xy" 
                   vy = -vy
                   bally += vy
@@ -179,10 +182,10 @@ end
 
 func drawBats()
   style WHITE
-  rect x - halfBat, baty1 - halfThick, x + halfBat, baty1 + halfThick
-  rect x - halfBat, baty2 - halfThick, x + halfBat, baty2 + halfThick
-  rect batx1 - halfThick, y - halfBat, batx1 + halfThick, y + halfBat
-  rect batx2 - halfThick, y - halfBat, batx2 + halfThick, y + halfBat
+  rrect x - halfBat, baty1 - halfThick, x + halfBat, baty1 + halfThick, 3, 3
+  rrect x - halfBat, baty2 - halfThick, x + halfBat, baty2 + halfThick, 3, 3
+  rrect batx1 - halfThick, y - halfBat, batx1 + halfThick, y + halfBat, 3, 3
+  rrect batx2 - halfThick, y - halfBat, batx2 + halfThick, y + halfBat, 3, 3
 end
 
 func drawBall()
@@ -198,7 +201,7 @@ func drawBlocks()
         paint col
         num leftx = blockLeft + bx * blockSpacing
         num topy = blockTop + by * blockSpacing
-        rect leftx, topy, leftx + blockSize, topy + blockSize
+        rrect leftx, topy, leftx + blockSize, topy + blockSize, 3, 3
       end
     end
   end
