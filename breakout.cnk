@@ -25,6 +25,8 @@ func main()
   num blockInner = 4
   num blockSpacing = MIDX / 20
   num blockSize = MIDX / 25
+  num blockTop = MIDY * 0.6
+  num blockLeft = MIDX * 0.6
   for by to blockWidth
     for bx to blockWidth
       num col = 0
@@ -35,6 +37,7 @@ func main()
     end
   end
   loadsound 0, currdir() + '/kicksp2.wav'
+  loadsound 1, currdir() + '/synth849.wav'
   console false
 end
 
@@ -67,27 +70,103 @@ func batMove()
   end
 end
 
+struct Rect
+  num left
+  num top
+  num right
+  num bottom
+end
+
+func bool overlap(Rect a, Rect b)
+  if a.top > b.bottom
+    return false
+  else if a.bottom < b.top
+    return false
+  else if a.left > b.right
+    return false
+  else if a.right < b.left
+    return false
+  end
+  return true
+end
+
+func str overlapDirection(Rect a, Rect b)
+  str dir = ""
+  if a.left <= b.right or a.right >= b.left
+    dir = "x"
+  end
+  if a.top <= b.bottom or a.bottom >= b.top
+    dir = dir + "y"
+  end if
+  return dir
+end
+
 func ballMove()
   ballx += vx
   bally += vy
-  bool onBatY = bally + halfBall >= y - halfBat and bally - halfBall <= y + halfBat
-  bool onBatX = ballx + halfBall >= x - halfBat and ballx - halfBall <= x + halfBat
-  if ballx > batx2 or ballx < batx1 or bally < baty1 or bally > baty2 
+  Rect ball = { left = ballx - halfBall, top = bally - halfBall, right = ballx + halfBall, bottom = ball + halfBall}
+  Rect leftBat = { left = batx1 + halfThick, top = y - halfBat, right = batx1 + halfThick, bottom = y + halfBat}
+  Rect rightBat = { left = batx2 - halfThick, top = y - halfBat, right = batx2 - halfThick, bottom = y + halfBat}
+  Rect topBat = { left = x - halfBat, top = baty1 + halfThick, right = x + halfBat , bottom = baty1 + halfThick}
+  Rect bottomBat = { left = x - halfBat, top = baty2 - halfThick, right = x + halfBat, bottom = baty2 - halfThick}
+  Rect screen = { left = 0, top = 0, right = SCREENW, bottom = SCREENH}
+
+  // ball to bat hit check
+  if not overlap(ball, screen)
     lostBall()
-  else if ballx + halfBall >= batx2 - halfThick and onBatY 
+  else if overlap(ball, leftBat)
     vx = -vx
+    ballx += vx
     playsound 0
-  else if ballx - halfBall <= batx1 + halfThick and onBatY
+  else if overlap(ball, rightBat)
     vx = -vx
+    ballx += vx
+    playsound 0
+  else if overlap(ball, topBat)
+    vy = -vy
+    bally += vy
+    playsound 0
+  else if overlap(ball, bottomBat)
+    vy = -vy
+    bally += vy
     playsound 0
   end
-  if bally + halfBall >= baty2 - halfThick and onBatX
-    vy = -vy
-    playsound 0
-  else if bally - halfBall <= baty1 + halfThick and onBatX
-    vy = -vy
-    playsound 0
-  end
+
+  // ball to block hit check
+  num ballCellx = int((ballx - blockLeft) / blockSpacing)
+  num ballCelly = int((bally - blockTop) / blockSpacing)
+  if ballCellx >= -1 and ballCellx <= blockWidth and ballCelly >= -1 and ballCelly <= blockWidth // only interested if close to blocks
+    for bcx from -1 to 1               // look at the 3 x 3 cells around ball
+       num xp = ballCellx + bcx
+       if yp >= 0 and yp < blockWidth  
+       for bcy from -1 to 1
+         num yp = ballCelly + bcy
+         if xp >= 0 and xp < blockWidth
+            num bi = yp * blockWidth + xp // pointer to the current cell
+            num col = blocks[bi]
+            if col != 0
+              num leftx = blockLeft + xp * blockSpacing
+              num topy = blockTop + yp * blockSpacing
+              Rect block = { left = leftx, top = topy, right = leftx + blockSize, bottom = topy + blockSize }
+              if overlap(ball, block)
+                blocks[bi] = 0
+                playsound 1
+                str dir = overlapDirection(ball, block)
+                if dir == "y" or dir == "xy" 
+                  vy = -vy
+                  bally += vy
+                end
+                if dir = "x" or dir == "xy"
+                  vx = -vx
+                  ballx += vx
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end         
 end
 
 func lostBall()
@@ -116,10 +195,11 @@ func drawBlocks()
       num col = blocks[by * blockWidth + bx]
       if col != 0
         paint col
-        num leftx = MIDX * 0.6 + bx * blockSpacing
-        num topy = MIDY * 0.6 + by * blockSpacing
+        num leftx = blockLeft + bx * blockSpacing
+        num topy = blockTop + by * blockSpacing
         rect leftx, topy, leftx + blockSize, topy + blockSize
       end
     end
   end
 end
+
