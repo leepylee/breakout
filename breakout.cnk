@@ -91,7 +91,7 @@ func bool overlap(Rect a, Rect b)
   return true
 end
 
-func str bounceDirectionx(Rect block, num x, num y, num vx, num vy)
+func str bounceDirection(Rect block, num x, num y, num vx, num vy)
   str dir = ""
   if (vx > 0 and x < block.left) or (vx < 0 and x > block.right)
     dir = "x"
@@ -118,20 +118,14 @@ func ballMove()
   // ball to bat hit check
   if not overlap(ball, screen)
     lostBall()
-  else if overlap(ball, leftBat)
+  else if overlap(ball, leftBat) or overlap(ball, rightBat)
     vx = -vx
+    vy += (bally - y) * 0.1
     ballx += vx
     playsound 0
-  else if overlap(ball, rightBat)
-    vx = -vx
-    ballx += vx
-    playsound 0
-  else if overlap(ball, topBat)
+  else if overlap(ball, topBat) or overlap(ball, bottomBat)
     vy = -vy
-    bally += vy
-    playsound 0
-  else if overlap(ball, bottomBat)
-    vy = -vy
+    vx += (ballx - x) * 0.1
     bally += vy
     playsound 0
   end
