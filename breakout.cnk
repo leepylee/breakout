@@ -127,13 +127,13 @@ func ballMove()
   else if overLeft or overRight
     vx = -vx
     vy += (bally - y) * 0.1
-    vx = sqr(speed * speed - vy * vy) * sgn(vy)
+    //vx = sqr(speed * speed - vy * vy) * sgn(vy)
     ballx += vx
     playsound 0
   else if overTop or overBottom
     vy = -vy
     vx += (ballx - x) * 0.1
-    vy = sqr(speed * speed - vx * vx) * sgn(vx)
+    //vy = sqr(speed * speed - vx * vx) * sgn(vx)
     bally += vy
     playsound 0
   end
