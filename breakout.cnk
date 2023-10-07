@@ -44,7 +44,7 @@ func main()
     end
   end
   loadsound 0, currdir() + '/kicksp2.wav'
-  loadsound 1, currdir() + '/synth849.wav'
+  loadsound 1, currdir() + '/Synth849.wav'
   console false
 end
 
