@@ -118,12 +118,22 @@ func ballMove()
   // ball to bat hit check
   if not overlap(ball, screen)
     lostBall()
-  else if overlap(ball, leftBat) or overlap(ball, rightBat)
+  else if overlap(ball, leftBat)
     vx = -vx
     vy += (bally - y) * 0.1
     ballx += vx
     playsound 0
-  else if overlap(ball, topBat) or overlap(ball, bottomBat)
+  else if overlap(ball, rightBat)
+    vx = -vx
+    vy += (bally - y) * 0.1
+    ballx += vx
+    playsound 0
+  else if overlap(ball, topBat)
+    vy = -vy
+    vx += (ballx - x) * 0.1
+    bally += vy
+    playsound 0
+  else if overlap(ball, bottomBat)
     vy = -vy
     vx += (ballx - x) * 0.1
     bally += vy
