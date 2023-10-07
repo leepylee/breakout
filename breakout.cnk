@@ -22,6 +22,7 @@ func main()
   num bally = MIDY
   num vx = -5
   num vy = 1
+  num speed = 5
 
   num halfThick = batThick / 2 
   num halfBat = batSize / 2
@@ -115,27 +116,24 @@ func ballMove()
   Rect bottomBat = { left = x - halfBat, top = baty2 - halfThick, right = x + halfBat, bottom = baty2 - halfThick}
   Rect screen = { left = 0, top = 0, right = SCREENW, bottom = SCREENH}
 
+  bool overLeft = overlap(ball, leftBat)
+  bool overRight = overlap(ball, rightBat)
+  bool overTop = overlap(ball, topBat)
+  bool overBottom = overlap(ball, bottomBat)
+
   // ball to bat hit check
   if not overlap(ball, screen)
     lostBall()
-  else if overlap(ball, leftBat)
+  else if overLeft or overRight
     vx = -vx
     vy += (bally - y) * 0.1
+    vx = sqr(speed * speed - vy * vy) * sgn(vy)
     ballx += vx
     playsound 0
-  else if overlap(ball, rightBat)
-    vx = -vx
-    vy += (bally - y) * 0.1
-    ballx += vx
-    playsound 0
-  else if overlap(ball, topBat)
+  else if overTop or overBottom
     vy = -vy
     vx += (ballx - x) * 0.1
-    bally += vy
-    playsound 0
-  else if overlap(ball, bottomBat)
-    vy = -vy
-    vx += (ballx - x) * 0.1
+    vy = sqr(speed * speed - vx * vx) * sgn(vx)
     bally += vy
     playsound 0
   end
